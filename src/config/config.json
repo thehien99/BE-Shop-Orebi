@@ -1,0 +1,32 @@
+{
+  "development": {
+    "username": "avnadmin",
+    "password": "AVNS_zysGR-XWJrt-rZMi5Mm",
+    "database": "defaultdb",
+    "host": "danghien-facebook-thehien9299.i.aivencloud.com",
+    "dialect": "postgres",
+    "port": "20961",
+    "logging": false,
+    "dialectOptions": {
+      "ssl": {
+        "require": true,
+        "rejectUnauthorized": false
+      }
+    }
+  },
+  "production": {
+    "username": "avnadmin",
+    "password": "AVNS_zysGR-XWJrt-rZMi5Mm",
+    "database": "defaultdb",
+    "host": "danghien-facebook-thehien9299.i.aivencloud.com",
+    "dialect": "postgres",
+    "port": "20961",
+    "logging": false,
+    "dialectOptions": {
+      "ssl": {
+        "require": true,
+        "rejectUnauthorized": false
+      }
+    }
+  }
+}
