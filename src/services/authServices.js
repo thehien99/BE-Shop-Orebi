@@ -5,7 +5,7 @@ const { v4 } = require("uuid");
 const jwt = require("jsonwebtoken");
 const { generateAccessToken, generateRefeshToken } = require("./token");
 
-const registerService = ({ firstName, name, birthDay, gender, emailOrPhone, password }) => {
+const registerService = ({ name, emailOrPhone, password }) => {
   return new Promise(async (resolve, reject) => {
     const hashPassword = (password) => bcrypt.hashSync(password, bcrypt.genSaltSync(12));
 
@@ -13,7 +13,7 @@ const registerService = ({ firstName, name, birthDay, gender, emailOrPhone, pass
       const response = await db.User.findOrCreate({
         where: { emailOrPhone },
         defaults: {
-          firstName, name, birthDay, gender, emailOrPhone,
+          name, emailOrPhone,
           password: hashPassword(password),
           id: v4()
         }

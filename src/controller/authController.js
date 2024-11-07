@@ -4,9 +4,9 @@ const { generateAccessToken } = require('../services/token')
 const TokenExpiredError = require('jsonwebtoken/lib/TokenExpiredError')
 
 const register = async (req, res, next) => {
-  const { firstName, name, birthDay, gender, emailOrPhone, password } = req.body
+  const { name, emailOrPhone, password } = req.body
   try {
-    if (!firstName || !name || !birthDay || !emailOrPhone || !password || !gender)
+    if (!name || !emailOrPhone || !password)
       return res.status(400).json({
         err: 0,
         msg: 'Create Failed'

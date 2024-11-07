@@ -7,19 +7,7 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.STRING
       },
-      firstName: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
       name: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-      birthDay: {
-        type: Sequelize.STRING,
-        allowNull: true
-      },
-      gender: {
         type: Sequelize.STRING,
         allowNull: false
       },
