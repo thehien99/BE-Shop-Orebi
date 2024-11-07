@@ -10,7 +10,7 @@ const registerService = ({ name, emailOrPhone, password }) => {
     const hashPassword = (password) => bcrypt.hashSync(password, bcrypt.genSaltSync(12));
 
     try {
-      const response = await db.User.findOrCreate({
+      const response = await db.User.findOne({
         where: { emailOrPhone },
         defaults: {
           name, emailOrPhone,
@@ -18,6 +18,12 @@ const registerService = ({ name, emailOrPhone, password }) => {
           id: v4()
         }
       })
+      if (response) {
+        return resolve({
+          status: 403,
+          msg: 'Email exist'
+        })
+      }
       const accessTokentoken = generateAccessToken(response?.id)
       const refreshToken = generateRefeshToken(response?.id)
 
