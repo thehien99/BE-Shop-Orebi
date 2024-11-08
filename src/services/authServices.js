@@ -10,7 +10,7 @@ const registerService = ({ name, emailOrPhone, password }) => {
     const hashPassword = (password) => bcrypt.hashSync(password, bcrypt.genSaltSync(12));
 
     try {
-      const response = await db.User.findOne({
+      const [user, response] = await db.User.findOrCreate({
         where: { emailOrPhone },
         defaults: {
           name, emailOrPhone,
@@ -18,24 +18,22 @@ const registerService = ({ name, emailOrPhone, password }) => {
           id: v4()
         }
       })
+      const accessTokentoken = response && generateAccessToken(response?.id)
+      const refreshToken = accessTokentoken && generateRefeshToken(response?.id)
       if (response) {
         return resolve({
+          status: 200,
+          msg: 'Create success',
+          user,
+          accessTokentoken,
+          refreshToken
+        })
+      } else {
+        return resolve({
           status: 403,
-          msg: 'Email exist'
+          msg: 'Email exist',
         })
       }
-      const accessTokentoken = generateAccessToken(response?.id)
-      const refreshToken = generateRefeshToken(response?.id)
-
-      resolve({
-        status: 1,
-        msg: "Create user sucesss",
-        detail: {
-          accessTokentoken,
-          response,
-          refreshToken
-        }
-      })
     } catch (error) {
       reject(error)
     }
@@ -47,20 +45,20 @@ const loginServices = ({ emailOrPhone, password }) => {
   return new Promise(async (resolve, reject) => {
     try {
       const response = await db.User.findOne({
-        where: { emailOrPhone: emailOrPhone },
+        where: { emailOrPhone },
         raw: true
       });
       const convertPassword = response && bcrypt.compareSync(password, response.password);
       const accessToken = convertPassword && generateAccessToken(response?.id)
-      const refreshToken = generateRefeshToken(response.id)
+      const refreshToken = accessToken && generateRefeshToken(response.id)
       token.push(refreshToken)
       resolve({
-        err: accessToken ? 0 : 1,
+        err: accessToken ? 200 : 403,
         msg: accessToken
           ? "Login is successfully !"
           : response
             ? "Password is wrong !"
-            : "Phone number not found !",
+            : "Phone number or email not found !",
         accessToken: accessToken || null,
         refreshToken: refreshToken || null
       });
