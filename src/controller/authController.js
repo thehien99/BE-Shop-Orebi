@@ -1,7 +1,6 @@
 const authServices = require('../services/authServices')
 const jwt = require('jsonwebtoken')
 const { generateAccessToken } = require('../services/token')
-const TokenExpiredError = require('jsonwebtoken/lib/TokenExpiredError')
 
 const register = async (req, res, next) => {
   const { name, emailOrPhone, password } = req.body
@@ -32,7 +31,8 @@ const loginController = async (req, res) => {
         msg: 'Login Failed'
       })
     const response = await authServices.loginServices(req.body)
-    res.cookie('refreshToken', response.refreshToken, { httpOnly: true, secure: true, sameSite: 'Strict' })
+    console.log(response)
+    res.cookie('refreshToken', response.refreshToken, { httpOnly: true, secure: true, sameSite: 'Strict', maxAge: 7 * 24 * 60 * 60 * 1000 })
     return res.status(200).json(response)
   } catch (error) {
     console.log(error)
@@ -40,8 +40,8 @@ const loginController = async (req, res) => {
 }
 
 const getUserController = async (req, res) => {
-  const id = req.user?.id
-  console.log(id)
+  const id = req.user
+  console.log('id', id)
   try {
     if (!id) {
       return res.status(401).json({
@@ -58,6 +58,7 @@ const getUserController = async (req, res) => {
 
 const refreshToken = async (req, res) => {
   const refreshToken = req.cookies.refreshToken
+  console.log('rftk', refreshToken)
   if (!refreshToken) {
     return res.status(403).json({
       msg: 'Error'
@@ -65,11 +66,11 @@ const refreshToken = async (req, res) => {
   }
 
   jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
-    console.log(user)
     if (err) {
       return res.json(err)
     }
-    const accessToken = generateAccessToken({ id: user.id })
+    const accessToken = generateAccessToken(user.id)
+    console.log(accessToken)
     res.json({ accessToken })
   })
 
