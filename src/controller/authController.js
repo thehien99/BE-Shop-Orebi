@@ -3,9 +3,9 @@ const jwt = require('jsonwebtoken')
 const { generateAccessToken } = require('../services/token')
 
 const register = async (req, res, next) => {
-  const { name, emailOrPhone, password } = req.body
+  const { name, emailOrPhone, password, role } = req.body
   try {
-    if (!name || !emailOrPhone || !password)
+    if (!name || !emailOrPhone || !password || !role)
       return res.status(400).json({
         err: 0,
         msg: 'Create Failed'
@@ -31,7 +31,6 @@ const loginController = async (req, res) => {
         msg: 'Login Failed'
       })
     const response = await authServices.loginServices(req.body)
-    console.log(response)
     res.cookie('refreshToken', response.refreshToken, { httpOnly: true, secure: true, sameSite: 'Strict', maxAge: 7 * 24 * 60 * 60 * 1000 })
     return res.status(200).json(response)
   } catch (error) {
@@ -76,9 +75,40 @@ const refreshToken = async (req, res) => {
 
 }
 
+const logoutController = (req, res) => {
+  res.cookie('jwt', "", {
+    httpOnly: true,
+    expires: new Date(0)
+  })
+  res.cookie('refreshToken', "", {
+    httpOnly: true,
+    expires: new Date(0)
+  })
+
+  res.status(200).json("Logout success")
+}
+
+//admin
+const loginAdmin = async (req, res) => {
+  const { emailOrPhone, password } = req.body
+  if (!emailOrPhone || !password) {
+    return res.status(500).json({
+      msg: 'Error'
+    })
+  }
+  try {
+    const response = await authServices.loginAdmin(req.body)
+    res.cookie('refreshToken', response.refreshToken, { httpOnly: true, secure: true, sameSite: 'Strict', maxAge: 7 * 24 * 60 * 60 * 1000 })  
+    return res.status(200).json(response)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 module.exports = {
   register,
   loginController,
   getUserController,
-  refreshToken
+  refreshToken, logoutController,
+  loginAdmin
 }

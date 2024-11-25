@@ -4,6 +4,7 @@ const bodyParser = require('body-parser')
 const { authRouter } = require('./router/authRouter')
 const { connectDb } = require('./config/connectDb')
 const cookieParser = require('cookie-parser');
+const { productRouter } = require('./router/productRouter')
 require('dotenv').config()
 
 const app = express()
@@ -16,6 +17,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 authRouter(app)
+productRouter(app)
 connectDb()
 
 let port = process.env.port || 6969

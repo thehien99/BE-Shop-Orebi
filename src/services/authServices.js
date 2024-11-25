@@ -4,8 +4,9 @@ const { Op, UUID, where, Sequelize } = require("sequelize");
 const { v4 } = require("uuid");
 const jwt = require("jsonwebtoken");
 const { generateAccessToken, generateRefeshToken } = require("./token");
+const { raw } = require("body-parser");
 
-const registerService = ({ name, emailOrPhone, password }) => {
+const registerService = ({ name, emailOrPhone, password, role }) => {
   return new Promise(async (resolve, reject) => {
     const hashPassword = (password) => bcrypt.hashSync(password, bcrypt.genSaltSync(12));
 
@@ -15,17 +16,19 @@ const registerService = ({ name, emailOrPhone, password }) => {
         defaults: {
           name, emailOrPhone,
           password: hashPassword(password),
-          id: v4()
+          id: v4(),
+          role
         }
       })
-      const accessTokentoken = response && generateAccessToken(response?.id)
-      const refreshToken = accessTokentoken && generateRefeshToken(response?.id)
+
+      const accessToken = response && generateAccessToken(user.dataValues.id)
+      const refreshToken = accessToken && generateRefeshToken(user.dataValues.id)
       if (response) {
         return resolve({
           status: 200,
           msg: 'Create success',
           user,
-          accessTokentoken,
+          accessToken,
           refreshToken
         })
       } else {
@@ -91,8 +94,40 @@ const getUserServices = (id) => {
   })
 }
 
+const loginAdmin = ({ emailOrPhone, password }) => {
+  let token = []
+  return new Promise(async (resolve, reject) => {
+    try {
+      const res = await db.User.findOne({
+        where: { emailOrPhone },
+        raw: true
+      })
+      const convertPassword = res && bcrypt.compareSync(password, res.password);
+      const accessToken = convertPassword && generateAccessToken(res?.id)
+      const refreshToken = accessToken && generateRefeshToken(res.id)
+      token.push(refreshToken)
+
+      if (res?.role === "Admin") {
+        resolve({
+          code: accessToken && 200,
+          msg: accessToken &&  'Bạn là Admin',
+          accessToken: accessToken || null
+        })
+      } else {
+        resolve({
+          code: 500,
+          msg: 'Bạn không có quyền truy cập vào đây'
+        })
+      }
+    } catch (error) {
+      reject(error)
+    }
+  })
+}
+
 module.exports = {
   registerService,
   loginServices,
-  getUserServices
+  getUserServices,
+  loginAdmin
 }

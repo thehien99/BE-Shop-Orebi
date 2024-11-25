@@ -3,6 +3,7 @@ require('dotenv').config()
 
 const verifyToken = (req, res, next) => {
   const accessToken = req.headers.authorization?.split(" ")[1]
+  console.log(accessToken)
   if (!accessToken)
     return res.status(401).json({
       err: 1,
@@ -11,10 +12,11 @@ const verifyToken = (req, res, next) => {
 
 
   jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+    console.log(user)
     if (err) {
       console.log(err)
     }
-    req.user = user.id
+    req.user = user?.id
     next()
   })
 }
