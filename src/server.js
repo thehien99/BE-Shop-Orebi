@@ -10,7 +10,7 @@ require('dotenv').config()
 const app = express()
 
 app.use(cors({
-  origin: '*', // Địa chỉ frontend của bạn
+  origin: 'https://shop-6zr4ds5dh-thehien99s-projects.vercel.app/', // Địa chỉ frontend của bạn
   credentials: true, // Cho phép gửi cookie và Authorization headers
 })); app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }));
