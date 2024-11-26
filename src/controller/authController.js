@@ -31,7 +31,13 @@ const loginController = async (req, res) => {
         msg: 'Login Failed'
       })
     const response = await authServices.loginServices(req.body)
-    res.cookie('refreshToken', response.refreshToken, { httpOnly: true, secure: true, sameSite: 'Strict', maxAge: 7 * 24 * 60 * 60 * 1000 })
+    // res.cookie('refreshToken', response.refreshToken,
+    //   {
+    //     httpOnly: true,
+    //     secure: true,
+    //     sameSite: 'Strict',
+    //     maxAge: 7 * 24 * 60 * 60 * 1000
+    //   })
     return res.status(200).json(response)
   } catch (error) {
     console.log(error)
@@ -57,7 +63,6 @@ const getUserController = async (req, res) => {
 
 const refreshToken = async (req, res) => {
   const refreshToken = req.cookies.refreshToken
-  console.log('rftk', refreshToken)
   if (!refreshToken) {
     return res.status(403).json({
       msg: 'Error'
@@ -69,7 +74,6 @@ const refreshToken = async (req, res) => {
       return res.json(err)
     }
     const accessToken = generateAccessToken(user.id)
-    console.log(accessToken)
     res.json({ accessToken })
   })
 
@@ -98,7 +102,7 @@ const loginAdmin = async (req, res) => {
   }
   try {
     const response = await authServices.loginAdmin(req.body)
-    res.cookie('refreshToken', response.refreshToken, { httpOnly: true, secure: true, sameSite: 'Strict', maxAge: 7 * 24 * 60 * 60 * 1000 })  
+    res.cookie('refreshToken', response.refreshToken, { httpOnly: true, secure: true, sameSite: 'Strict', maxAge: 7 * 24 * 60 * 60 * 1000 })
     return res.status(200).json(response)
   } catch (error) {
     console.log(error)
