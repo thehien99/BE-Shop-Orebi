@@ -9,10 +9,26 @@ require('dotenv').config()
 
 const app = express()
 
-app.use(cors({
-  origin: '*', // Địa chỉ frontend của bạn
-  credentials: true, // Cho phép gửi cookie và Authorization headers
-}));
+
+const allowedOrigins = [
+  'https://shop-fe-tan.vercel.app', // Thêm domain frontend mới vào danh sách cho phép
+  'https://shop-6zr4ds5dh-thehien99s-projects.vercel.app', // Miền cũ
+  // Nếu có nhiều miền frontend khác, có thể thêm ở đây.
+];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      callback(null, true); // cho phép yêu cầu từ origin hợp lệ
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true, // Nếu bạn cần gửi cookie hay session
+};
+
+app.use(cors(corsOptions));
+
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
