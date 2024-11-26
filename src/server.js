@@ -10,7 +10,7 @@ require('dotenv').config()
 const app = express()
 
 app.use(cors({
-  origin: 'https://shop-fe-tan.vercel.app/', // Địa chỉ frontend của bạn
+  origin: '*', // Địa chỉ frontend của bạn
   credentials: true, // Cho phép gửi cookie và Authorization headers
 }));
 app.use(bodyParser.json())
