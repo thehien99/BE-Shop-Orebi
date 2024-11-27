@@ -29,6 +29,10 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
+// app.use(cors({
+//   origin: 'http://localhost:5173',
+//   credentials: true
+// }))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());

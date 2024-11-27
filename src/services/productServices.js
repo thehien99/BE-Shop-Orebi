@@ -1,6 +1,7 @@
 const { Json } = require('sequelize/lib/utils')
 const db = require('../models/index')
 const { v4 } = require('uuid')
+const { where } = require('sequelize')
 
 const addProduct = ({
   name,
@@ -91,13 +92,22 @@ const getProduct = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
       const res = await db.Product.findOne({
-        where: { id },
+        where: { id }
       })
       console.log(res)
+      const productImg = await db.Image.findOne({
+        where: { id: res.imageId }
+      })
+
+      if (!res) {
+        return resolve({
+          msg: 'Not found Id'
+        })
+      }
       resolve({
         code: 200,
         msg: 'get product success',
-        res
+        payload: { ...res.dataValues, productImg }
       })
     } catch (error) {
       reject(error)

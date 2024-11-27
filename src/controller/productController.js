@@ -90,6 +90,7 @@ const deleteProduct = () => {
 
 const getProduct = async (req, res) => {
   const { id } = req.query
+  console.log(id)
   if (!id) {
     return res.status(403).json({
       msg: 'Error'
@@ -112,20 +113,6 @@ const searchProduct = async (req, res) => {
     })
   }
   try {
-    // const response = await elasticClient.search({
-    //   index: 'products',
-    //   body: {
-    //     query: {
-    //       multi_match: {
-    //         query,
-    //         fields: ['name']
-    //       }
-    //     }
-    //   }
-    // })
-    // const hits = response.body.hits.hits.map((hit) => hit._source);
-    // return res.json(hits)
-
     const response = await db.Product.findAll({
       where: {
         name: {
