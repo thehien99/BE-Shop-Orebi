@@ -106,11 +106,11 @@ const loginAdmin = ({ emailOrPhone, password }) => {
       const accessToken = convertPassword && generateAccessToken(res?.id)
       const refreshToken = accessToken && generateRefeshToken(res.id)
       token.push(refreshToken)
-
-      if (res?.role === "Admin") {
+      console.log('rés', res.role)
+      if (res?.role === "admin") {
         resolve({
           code: accessToken && 200,
-          msg: accessToken &&  'Bạn là Admin',
+          msg: accessToken && 'Bạn là Admin',
           accessToken: accessToken || null
         })
       } else {

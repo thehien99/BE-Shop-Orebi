@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
     //   User.hasMany(models.Post, { foreignKey: 'userId', as: 'Users' })
     // }
     static associations(models) {
-      User.hasOne(models.Order, {
+      User.hasMany(models.Order, {
         foreignKey: 'userId',
         as: 'orders'
       })

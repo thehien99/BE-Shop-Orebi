@@ -94,7 +94,6 @@ const getProduct = (id) => {
       const res = await db.Product.findOne({
         where: { id }
       })
-      console.log(res)
       const productImg = await db.Image.findOne({
         where: { id: res.imageId }
       })
@@ -125,7 +124,7 @@ const getAllProduct = () => {
           const img = await db.Image.findOne({
             where: { id: item.imageId }
           })
-          return { ...item.dataValues, img: img.image }
+          return { ...item.dataValues, image: img.image }
         })
       )
       resolve(productImg)

@@ -31,13 +31,7 @@ const loginController = async (req, res) => {
         msg: 'Login Failed'
       })
     const response = await authServices.loginServices(req.body)
-    // res.cookie('refreshToken', response.refreshToken,
-    //   {
-    //     httpOnly: true,
-    //     secure: true,
-    //     sameSite: 'Strict',
-    //     maxAge: 7 * 24 * 60 * 60 * 1000
-    //   })
+
     return res.status(200).json(response)
   } catch (error) {
     console.log(error)
