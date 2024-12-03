@@ -1,6 +1,9 @@
 const authServices = require('../services/authServices')
 const jwt = require('jsonwebtoken')
 const { generateAccessToken } = require('../services/token')
+const db = require('../models')
+const { where } = require('sequelize')
+const { v4 } = require('uuid')
 
 const register = async (req, res, next) => {
   const { name, emailOrPhone, password, role } = req.body
@@ -20,8 +23,6 @@ const register = async (req, res, next) => {
 }
 
 
-
-
 const loginController = async (req, res) => {
   const { emailOrPhone, password } = req.body
   try {
@@ -38,9 +39,77 @@ const loginController = async (req, res) => {
   }
 }
 
+const createAddress = async (req, res) => {
+  const { address, userId, phone } = req.body
+  console.log(req.body)
+  if (!address) {
+    return res.status(500).json({
+      msg: 'Error'
+    })
+  }
+  try {
+    const response = await db.Address.findOrCreate({
+      where: { userId },
+      defaults: {
+        id: v4(),
+        userId,
+        address,
+        phone
+      }
+    })
+    return res.status(200).json(response)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+const getAdress = async (req, res) => {
+  const id = req.user
+  console.log(id)
+  if (!id) {
+    return res.status(500).json({
+      msg: 'error'
+    })
+  }
+  try {
+    const response = await db.Address.findOne({
+      where: { userId: id },
+      raw: true
+    })
+    return res.status(200).json(response)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+const updateUser = async (req, res) => {
+  const id = req.user
+  console.log(id)
+  const { name, address, phone } = req.body
+  if (!id) {
+    return res.status(500).json({
+      msg: 'Error'
+    })
+  }
+  try {
+    await db.User.update({
+      name: name,
+    }, { where: { id } })
+    await db.Address.update({
+      phone,
+      address
+    }, { where: { userId: id } })
+
+    return res.status(200).json({
+      msg: 'Update success'
+    })
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 const getUserController = async (req, res) => {
   const id = req.user
-  console.log('id', id)
   try {
     if (!id) {
       return res.status(401).json({
@@ -108,5 +177,7 @@ module.exports = {
   loginController,
   getUserController,
   refreshToken, logoutController,
-  loginAdmin
+  loginAdmin,
+  updateUser,
+  createAddress, getAdress
 }

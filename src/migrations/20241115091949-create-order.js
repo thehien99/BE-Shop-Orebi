@@ -22,7 +22,7 @@ module.exports = {
         type: Sequelize.STRING,  // Lưu thông tin địa chỉ dưới dạng JSON
         allowNull: false,
         references: {
-          model: 'Addresss',
+          model: 'Addresses',
           key: 'id'
         },
       },
