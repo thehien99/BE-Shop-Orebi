@@ -11,7 +11,7 @@ const app = express()
 
 
 const allowedOrigins = [
-  'https://shop-fe-tan.vercel.app', // Thêm domain frontend mới vào danh sách cho phép
+  'https://shop-fe-th.vercel.app', // Thêm domain frontend mới vào danh sách cho phép
   'https://shop-6zr4ds5dh-thehien99s-projects.vercel.app', // Miền cũ
   // Nếu có nhiều miền frontend khác, có thể thêm ở đây.
 ];

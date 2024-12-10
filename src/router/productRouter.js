@@ -12,6 +12,8 @@ const productRouter = (app) => {
   router.delete('/deletePd', productController.deleteProduct)
   router.get('/getProduct', productController.getProduct)
   router.get('/search', productController.searchProduct)
+
+
   return app.use('/', router)
 }
 
