@@ -3,7 +3,6 @@ const db = require("../models")
 
 const checkAdmin = async (req, res, next) => {
   const id = req.user
-  console.log(id)
   try {
     const response = await db.User.findOne({
       where: { id }

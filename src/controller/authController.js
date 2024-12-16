@@ -2,7 +2,6 @@ const authServices = require('../services/authServices')
 const jwt = require('jsonwebtoken')
 const { generateAccessToken } = require('../services/token')
 const db = require('../models')
-const { where } = require('sequelize')
 const { v4 } = require('uuid')
 
 const register = async (req, res, next) => {
@@ -41,7 +40,6 @@ const loginController = async (req, res) => {
 
 const createAddress = async (req, res) => {
   const { address, userId, phone } = req.body
-  console.log(req.body)
   if (!address) {
     return res.status(500).json({
       msg: 'Error'
@@ -65,7 +63,6 @@ const createAddress = async (req, res) => {
 
 const getAdress = async (req, res) => {
   const id = req.user
-  console.log(id)
   if (!id) {
     return res.status(500).json({
       msg: 'error'
