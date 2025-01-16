@@ -1,10 +1,7 @@
 const bcrypt = require("bcryptjs/dist/bcrypt");
 const db = require("../models");
-const { Op, UUID, where, Sequelize } = require("sequelize");
 const { v4 } = require("uuid");
-const jwt = require("jsonwebtoken");
 const { generateAccessToken, generateRefeshToken } = require("./token");
-const { raw } = require("body-parser");
 
 const registerService = ({ name, emailOrPhone, password, role }) => {
   return new Promise(async (resolve, reject) => {
@@ -14,9 +11,10 @@ const registerService = ({ name, emailOrPhone, password, role }) => {
       const [user, response] = await db.User.findOrCreate({
         where: { emailOrPhone },
         defaults: {
-          name, emailOrPhone,
-          password: hashPassword(password),
           id: v4(),
+          name,
+          emailOrPhone,
+          password: hashPassword(password),
           role
         }
       })
@@ -110,7 +108,9 @@ const loginAdmin = ({ emailOrPhone, password }) => {
         resolve({
           code: accessToken && 200,
           msg: accessToken && 'Bạn là Admin',
-          accessToken: accessToken || null
+          data: res,
+          accessToken: accessToken || null,
+          refreshToken: refreshToken || null
         })
       } else {
         resolve({

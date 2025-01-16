@@ -1,10 +1,9 @@
-const { QueryError, Op, where, Model, Sequelize } = require('sequelize')
+const { Op, Sequelize } = require('sequelize')
 const { imageUpload } = require('../helper/coudinary')
 const db = require('../models')
 const productServices = require('../services/productServices')
 const { v4 } = require('uuid')
-const elasticClient = require('../elasticSearch/elasticSearch')
-const { query } = require('express')
+const { broadcastMessage } = require('../websockets/websocket')
 
 //thêm sản phẩm
 const addProduct = async (req, res) => {
@@ -175,6 +174,7 @@ const searchProduct = async (req, res) => {
 const orderProduct = async (req, res) => {
   const { userId, shippingAddressId, items, paymentMethod
   } = req.body
+
   try {
     const user = await db.User.findByPk(userId)
     const addressShip = await db.Address.findByPk(shippingAddressId)
@@ -186,6 +186,7 @@ const orderProduct = async (req, res) => {
 
     let totalProduct = 0.0
     let priceProduct = 0
+
     // Kiểm tra tồn kho và tính toán giá trị đơn hàng
     const orderItems = await Promise.all(
       items?.map(async (item) => {
@@ -232,6 +233,7 @@ const orderProduct = async (req, res) => {
           orderId: createOrder.id
         })
         console.log('items', item)
+
         //cập nhật tồn kho
         const product = await db.Product.findOne({
           where: { id: item?.productId }
@@ -241,6 +243,9 @@ const orderProduct = async (req, res) => {
         await product.save()
       })
     )
+
+    broadcastMessage({ type: 'NEW_ORDER', data: createOrder });
+
 
     return res.status(200).json({
       msg: 'Create success',
@@ -254,7 +259,7 @@ const orderProduct = async (req, res) => {
 const getAllOrder = async (req, res) => {
   const userId = req.user
   if (!userId) {
-    return res.status(500).json('token error')
+    return res.status(401).json('token error')
   }
   try {
     const order = await db.Order.findAll({
@@ -272,19 +277,35 @@ const getAllOrder = async (req, res) => {
           attributes: {
             exclude: ['orderId', 'productId', 'createdAt', 'updatedAt']
           }
-        })
-        return { ...item, orderItem: response }
+        });
+
+        // Kiểm tra nếu không tìm thấy OrderItem
+        if (!response) {
+          console.warn(`OrderItem not found for orderId: ${item.id}`);
+          return { ...item, orderItem: null };
+        }
+
+        return { ...item, orderItem: response };
       })
-    )
+    );
+
+
     const image = await Promise.all(
       orderItems.map(async (item) => {
+        if (!item.orderItem) {
+          console.warn(`Missing orderItem for orderId: ${item.id}`);
+          return { ...item, image: null };
+        }
+
         const image = await db.Image.findOne({
           where: { id: item.orderItem.imageId },
+          raw: true
+        });
 
-        })
-        return { ...item, image: image.image }
+        return { ...item, image: image ? image.image : null };
       })
-    )
+    );
+
 
     const response = await Promise.all(
       image.map(async (item) => {
@@ -300,10 +321,133 @@ const getAllOrder = async (req, res) => {
     console.log(error)
   }
 }
+
+const deleteProduct = async (req, res) => {
+  const { id } = req.body
+  if (!id) {
+    return res.status(500).json({
+      msg: 'id not found'
+    })
+  }
+  try {
+    const response = await db.Product.findOne({
+      where: { id: id }
+    })
+    if (!response) {
+      return res.status(500).json({
+        msg: 'Product not found'
+      })
+    }
+    await response.destroy()
+    return res.status(200).json({
+      code: 1,
+      msg: 'Delete product success'
+    })
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+
+const getAllOrderUser = async (req, res) => {
+  try {
+    const getAllOrder = await db.Order.findAll({
+      attributes: {
+        exclude: ['_previousDataValues', 'uniqno', '_changed', '_options', 'isNewRecord']
+      }
+    })
+
+    const findUser = await Promise.all(
+      getAllOrder.map(async (item) => {
+        const res = await db.User.findOne({
+          where: { id: item?.userId },
+          attributes: {
+            exclude: ['password', 'createdAt', 'updatedAt', 'id']
+          }
+        })
+        return { ...item.dataValues, user: res }
+      })
+    )
+    const findAddress = await Promise.all(
+      findUser?.map(async (item) => {
+        const res = await db.Address.findOne({
+          where: { userId: item?.userId },
+          attributes: {
+            exclude: ['id', 'userId', 'createdAt', 'updatedAt']
+          }
+
+        })
+        return { ...item, address: res }
+      })
+    )
+
+    const findOrderItem = await Promise.all(
+      findAddress?.map(async (item) => {
+        const res = await db.OrderItem.findOne({
+          where: { orderId: item?.id },
+          attributes: {
+            exclude: ['updatedAt', 'createdAt', 'id', 'orderId']
+          }
+        })
+        return { ...item, orderItem: res }
+      })
+    )
+
+    const findImage = await Promise.all(
+      findOrderItem?.map(async (item) => {
+        const res = await db.Image.findOne({
+          where: { id: item?.orderItem?.imageId },
+          attributes: {
+            exclude: ['createdAt', 'updatedAt', 'id']
+          }
+        })
+        return { ...item, image: res.image }
+      })
+    )
+    return res.status(200).json({
+      data: findImage,
+    })
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+
+const updateIsDelivered = async (req, res) => {
+  console.log('Request Body:', req.body); // Kiểm tra dữ liệu nhận được
+  const id = req.user;
+  const { productId, isDelivered } = req.body;
+
+  if (!id) {
+    return res.status(401).json({ msg: 'Token error' });
+  }
+
+  if (!productId || typeof isDelivered === 'undefined') {
+    return res.status(400).json({ msg: 'Missing productId or isDelivered' });
+  }
+
+  try {
+    const response = await db.Order.update(
+      { isDelivered },
+      { where: { id: productId } }
+    );
+    return res.status(200).json(response);
+  } catch (error) {
+    console.error('Database Error:', error);
+    return res.status(500).json({ msg: 'Internal server error' });
+  }
+};
+
 module.exports = {
-  addProduct, uploadFile, getAllProduct, updateProduct,
+  addProduct,
+  uploadFile,
+  getAllProduct,
+  updateProduct,
   getProduct,
   searchProduct,
   orderProduct,
-  getAllOrder
+  getAllOrder,
+  deleteProduct,
+  getAllOrderUser,
+  updateIsDelivered
 }

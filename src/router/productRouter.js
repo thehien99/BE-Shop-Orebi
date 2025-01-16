@@ -14,7 +14,9 @@ const productRouter = (app) => {
   router.get('/search', productController.searchProduct)
   router.post('/orderProduct', productController.orderProduct)
   router.get('/getAllOrder', verifyToken, productController.getAllOrder)
-
+  router.delete('/deleteProduct', productController.deleteProduct)
+  router.get('/getAllOrderAdmin', productController.getAllOrderUser)
+  router.post('/updateIsDelivered', verifyToken, productController.updateIsDelivered)
   return app.use('/', router)
 }
 

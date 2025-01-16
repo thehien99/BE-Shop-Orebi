@@ -9,11 +9,11 @@ const verifyToken = (req, res, next) => {
       msg: "Missing access token"
     })
 
-
   jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
     if (err) {
       console.log(err)
     }
+    console.log('user', user)
     req.user = user?.id
     next()
   })

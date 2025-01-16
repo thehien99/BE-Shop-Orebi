@@ -13,7 +13,7 @@ const authRouter = (app) => {
   router.post('/rftk', authController.refreshToken)
   router.post('/logout', authController.logoutController)
   router.put('/update_user', verifyToken, authController.updateUser)
-
+  router.get('/getAllUser', verifyToken, authController.getAllUserAdmin)
   //admin
   router.post('/adPanel', authController.loginAdmin)
   return app.use('/', router)
