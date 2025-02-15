@@ -14,6 +14,7 @@ require('dotenv').config()
 
 const app = express()
 
+
 //websocket
 const wss = new WebSocket.Server({ noServer: true });
 
@@ -69,3 +70,4 @@ app.server.on('upgrade', (request, socket, head) => {
     wss.emit('connection', ws, request);
   });
 });
+

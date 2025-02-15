@@ -128,6 +128,7 @@ const getUserController = async (req, res) => {
 
 const refreshToken = async (req, res) => {
   const refreshToken = req.cookies.refreshToken
+  console.log('rftk', refreshToken)
   if (!refreshToken) {
     return res.status(401).json({
       message: 'Refreshtoken missing'

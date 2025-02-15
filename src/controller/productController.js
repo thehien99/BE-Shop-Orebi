@@ -172,48 +172,44 @@ const searchProduct = async (req, res) => {
 
 //đặt hàng
 const orderProduct = async (req, res) => {
-  const { userId, shippingAddressId, items, paymentMethod
-  } = req.body
+  const { userId, shippingAddressId, items, paymentMethod } = req.body;
 
   try {
-    const user = await db.User.findByPk(userId)
-    const addressShip = await db.Address.findByPk(shippingAddressId)
-
+    const user = await db.User.findByPk(userId);
+    const addressShip = await db.Address.findByPk(shippingAddressId);
 
     if (!user || !addressShip) {
-      return res.status(500).json('Not found user or address')
+      return res.status(500).json('Not found user or address');
     }
 
-    let totalProduct = 0.0
-    let priceProduct = 0
+    let totalProduct = 0.0;
+    let priceProduct = 0;
 
-    // Kiểm tra tồn kho và tính toán giá trị đơn hàng
+    // Process order items
     const orderItems = await Promise.all(
       items?.map(async (item) => {
         const product = await db.Product.findOne({
-          where: { id: item?.id }
-        })
-        const products = product.dataValues
+          where: { id: item?.id },
+        });
+        const products = product.dataValues;
         if (!products || parseFloat(item?.quantity >= products.totalSock)) {
-          throw new Error(
-            `Product ${item?.id} is not available in sufficient quantity`
-          )
+          throw new Error(`Product ${item?.id} is not available in sufficient quantity`);
         }
 
-        totalProduct = item?.priceProduct
-        priceProduct = products.price
+        totalProduct = item?.priceProduct;
+        priceProduct = products.price;
         return {
           id: v4(),
           productId: item?.id,
           name: products.name,
           quantity: item?.quanti,
           price: priceProduct,
-          imageId: products?.imageId
-        }
+          imageId: products?.imageId,
+        };
       })
-    )
+    );
 
-    //Tạo đơn hàng
+    // Create order in database
     const createOrder = await db.Order.create({
       id: v4(),
       userId,
@@ -223,38 +219,47 @@ const orderProduct = async (req, res) => {
       shippingPrice: 0,
       totalPrice: totalProduct,
       isPaid: false,
-      isDelivered: false
-    })
+      isDelivered: false,
+    });
 
+    // Add order items to database
     await Promise.all(
       orderItems.map(async (item) => {
         await db.OrderItem.create({
           ...item,
-          orderId: createOrder.id
-        })
-        console.log('items', item)
+          orderId: createOrder.id,
+        });
 
-        //cập nhật tồn kho
+        // Update product stock
         const product = await db.Product.findOne({
-          where: { id: item?.productId }
-        })
-        product.totalSock -= item.quantity
-        product.quantity -= item.quantity
-        await product.save()
+          where: { id: item?.productId },
+        });
+        product.totalSock -= item.quantity;
+        product.quantity -= item.quantity;
+        await product.save();
       })
-    )
+    );
 
-    broadcastMessage({ type: 'NEW_ORDER', data: createOrder });
-
+    // Send notification to all admins
+    broadcastMessage({
+      type: 'NEW_ORDER',
+      data: {
+        orderId: createOrder.id,
+        userId,
+        items: orderItems,
+        totalPrice: totalProduct,
+      },
+    });
 
     return res.status(200).json({
       msg: 'Create success',
-      createOrder
-    })
+      createOrder,
+    });
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
+};
+
 
 const getAllOrder = async (req, res) => {
   const userId = req.user
