@@ -21,28 +21,28 @@ const wss = new WebSocket.Server({ noServer: true });
 websocket(wss)
 
 
-const allowedOrigins = [
-  'https://shop-fe-th.vercel.app', // Thêm domain frontend mới vào danh sách cho phép
-  // Nếu có nhiều miền frontend khác, có thể thêm ở đây.
-];
+// const allowedOrigins = [
+//   'https://shop-fe-th.vercel.app', // Thêm domain frontend mới vào danh sách cho phép
+//   // Nếu có nhiều miền frontend khác, có thể thêm ở đây.
+// ];
 
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
-      callback(null, true); // cho phép yêu cầu từ origin hợp lệ
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true, // Nếu bạn cần gửi cookie hay session
-};
+// const corsOptions = {
+//   origin: function (origin, callback) {
+//     if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+//       callback(null, true); // cho phép yêu cầu từ origin hợp lệ
+//     } else {
+//       callback(new Error('Not allowed by CORS'));
+//     }
+//   },
+//   credentials: true, // Nếu bạn cần gửi cookie hay session
+// };
 
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
 
-// app.use(cors({
-//   origin: 'http://localhost:5173',
-//   credentials: true
-// }))
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
+}))
 
 
 
