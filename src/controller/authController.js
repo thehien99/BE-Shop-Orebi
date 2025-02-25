@@ -85,9 +85,7 @@ const getAdress = async (req, res) => {
 }
 
 const updateUser = async (req, res) => {
-  const id = req.user
-  console.log(id)
-  const { name, address, phone } = req.body
+  const { id, name, address, phone } = req.body
   if (!id) {
     return res.status(500).json({
       msg: 'Error'
