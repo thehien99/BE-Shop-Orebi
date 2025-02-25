@@ -49,6 +49,7 @@ const loginServices = ({ emailOrPhone, password }) => {
         where: { emailOrPhone },
         raw: true
       });
+      console.log(response)
       const convertPassword = response && bcrypt.compareSync(password, response.password);
       const accessToken = convertPassword && generateAccessToken(response?.id)
       const refreshToken = accessToken && generateRefeshToken(response.id)
@@ -61,7 +62,8 @@ const loginServices = ({ emailOrPhone, password }) => {
             ? "Password is wrong !"
             : "Phone number or email not found !",
         accessToken: accessToken || null,
-        refreshToken: refreshToken || null
+        refreshToken: refreshToken || null,
+        role: response?.role
       });
     } catch (error) {
       reject(error)
@@ -110,7 +112,8 @@ const loginAdmin = ({ emailOrPhone, password }) => {
           msg: accessToken && 'Bạn là Admin',
           data: res,
           accessToken: accessToken || null,
-          refreshToken: refreshToken || null
+          refreshToken: refreshToken || null,
+          role: res.role
         })
       } else {
         resolve({

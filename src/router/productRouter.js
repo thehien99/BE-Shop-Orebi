@@ -9,7 +9,7 @@ const productRouter = (app) => {
   router.post('/upload', upload.single("file"), productController.uploadFile)
   router.post('/addProduct', productController.addProduct)
   router.get('/getallProduct', productController.getAllProduct)
-  router.put('/update', productController.updateProduct)
+  router.post('/updateProduct', productController.updateProduct)
   router.get('/getProduct', productController.getProduct)
   router.get('/search', productController.searchProduct)
   router.post('/orderProduct', productController.orderProduct)

@@ -47,43 +47,25 @@ const addProduct = ({
   })
 }
 
-const updateProduct = (productId, {
-  name,
-  size,
-  imageId,
-  brand,
-  quantity,
-  description,
-  salePrice,
-  price,
-  totalSock,
-  color }) => {
-
+const updateProduct = ({ productId }) => {
+  const data = productId.payload
   return new Promise(async (resolve, reject) => {
     try {
-      await db.Product.update({
-        name,
-        description,
-        price,
-        quantity,
-        brand,
-        color: [color],
-        size: [size],
-        salePrice,
-        totalSock,
-        imageId
-      }, { where: { id: productId } })
-
-      await db.Image.update({
-
-      })
-
+      const response = await db.Product.update({
+        name: data.name,
+        description: data.description,
+        price: Number(data.price),
+        quantity: Number(data.quantity),
+        brand: data.brand ? data.brand : 'No brand',
+        salePrice: data.salePrice ? data.salePrice : 0,
+        totalSock: Number(data.totalSock),
+      }, { where: { id: productId.productId } })
       resolve({
         code: 200,
         response
       })
     } catch (error) {
-      console.log(error)
+      reject(error)
     }
   })
 }

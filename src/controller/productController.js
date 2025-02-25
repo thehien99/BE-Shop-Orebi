@@ -61,25 +61,12 @@ const getAllProduct = async (req, res) => {
 
 //cập nhật product
 const updateProduct = async (req, res) => {
-  const { productId } = req.query
-  const { name,
-    size,
-    imageId,
-    brand,
-    quantity,
-    description,
-    salePrice,
-    price,
-    totalSock,
-    color } = req.body
-
-  if (!productId) {
+  const { productId } = req.body
+  if (!productId.productId) {
     return res.status(500).json({ msg: 'Error' })
   }
   try {
-    const response = await productServices.updateProduct(
-      productId, req.body
-    )
+    const response = await productServices.updateProduct(req.body)
     return res.status(200).json(response)
   } catch (error) {
     console.log(error)
