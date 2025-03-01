@@ -14,6 +14,7 @@ const authRouter = (app) => {
   router.post('/logout', authController.logoutController)
   router.put('/update_user', verifyToken, authController.updateUser)
   router.get('/getAllUser', verifyToken, authController.getAllUserAdmin)
+  router.get('/getUserOrder', authController.getUserOrderController)
   //admin
   router.post('/adPanel', authController.loginAdmin)
   return app.use('/', router)

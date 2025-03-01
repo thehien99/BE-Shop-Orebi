@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken')
 const { generateAccessToken } = require('../services/token')
 const db = require('../models')
 const { v4 } = require('uuid')
+const { where } = require('sequelize')
 
 const register = async (req, res, next) => {
   const { name, emailOrPhone, password, role } = req.body
@@ -110,7 +111,6 @@ const updateUser = async (req, res) => {
 
 const getUserController = async (req, res) => {
   const id = req.user
-  console.log('id', id)
   if (!id) {
     return res.status(401).json({
       msg: 'Token expired'
@@ -211,6 +211,27 @@ const getAllUserAdmin = async (req, res) => {
   }
 }
 
+const getUserOrderController = async (req, res) => {
+  const { id } = req.query
+  console.log('id', id)
+  if (!id) {
+    return res.status(401).json('error')
+  }
+  try {
+    const response = await db.User.findOne({
+      where: { id },
+      raw: true,
+      attributes: {
+        exclude: ["password"]
+      }
+    })
+    return res.status(200).json(response)
+
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 module.exports = {
   register,
   loginController,
@@ -221,5 +242,6 @@ module.exports = {
   updateUser,
   createAddress,
   getAdress,
-  getAllUserAdmin
+  getAllUserAdmin,
+  getUserOrderController
 }

@@ -3,7 +3,8 @@ const { imageUpload } = require('../helper/coudinary')
 const db = require('../models')
 const productServices = require('../services/productServices')
 const { v4 } = require('uuid')
-const { broadcastMessage } = require('../websockets/websocket')
+const socket = require('../sockets/socket')
+const redis = require('../redis/redis')
 
 //thêm sản phẩm
 const addProduct = async (req, res) => {
@@ -227,16 +228,11 @@ const orderProduct = async (req, res) => {
       })
     );
 
-    // Send notification to all admins
-    broadcastMessage({
-      type: 'NEW_ORDER',
-      data: {
-        orderId: createOrder.id,
-        userId,
-        items: orderItems,
-        totalPrice: totalProduct,
-      },
-    });
+    //save redis
+    redis.cacheNewOrder(createOrder)
+    //send notification for all admins
+    socket.emitNewOrder(createOrder)
+
 
     return res.status(200).json({
       msg: 'Create success',
