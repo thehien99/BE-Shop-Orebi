@@ -21,7 +21,6 @@ initializeSocketServer(server)
 const allowedOrigins = [
   'https://shop-fe-seven.vercel.app/', // Thêm domain frontend mới vào danh sách cho phép
   // Nếu có nhiều miền frontend khác, có thể thêm ở đây.
-  '*'
 ];
 
 const corsOptions = {
