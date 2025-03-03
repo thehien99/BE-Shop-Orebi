@@ -19,27 +19,26 @@ initializeSocketServer(server)
 
 
 const allowedOrigins = [
-  'https://shop-fe-seven.vercel.app/', // Thêm domain frontend mới vào danh sách cho phép
-  // Nếu có nhiều miền frontend khác, có thể thêm ở đây.
+  'https://shop-fe-seven.vercel.app', // Thêm domain frontend mới vào danh sách cho phép
 ];
 
-// const corsOptions = {
-//   origin: function (origin, callback) {
-//     if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
-//       callback(null, true); // cho phép yêu cầu từ origin hợp lệ
-//     } else {
-//       callback(new Error('Not allowed by CORS'));
-//     }
-//   },
-//   credentials: true, // Nếu bạn cần gửi cookie hay session
-// };
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      callback(null, true); // cho phép yêu cầu từ origin hợp lệ
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true, // Nếu bạn cần gửi cookie hay session
+};
 
-// app.use(cors(corsOptions));
+app.use(cors(corsOptions));
 
-app.use(cors({
-  origin: 'https://shop-fe-seven.vercel.app', // Thêm domain frontend mới vào danh sách cho phép
-  credentials: true
-}))
+// app.use(cors({
+//   origin: 'https://shop-fe-seven.vercel.app', // Thêm domain frontend mới vào danh sách cho phép
+//   credentials: true
+// }))
 
 
 
