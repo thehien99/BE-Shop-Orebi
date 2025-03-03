@@ -37,7 +37,7 @@ const allowedOrigins = [
 // app.use(cors(corsOptions));
 
 app.use(cors({
-  origin: '*', // Thêm domain frontend mới vào danh sách cho phép
+  origin: 'https://shop-fe-seven.vercel.app', // Thêm domain frontend mới vào danh sách cho phép
   credentials: true
 }))
 
