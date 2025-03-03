@@ -5,7 +5,7 @@ let connectedAdmins = new Set();  // Set lưu trữ socket ID của các admin �
 function initializeSocketServer(server) {
   io = require('socket.io')(server, {
     cors: {
-      origin: 'http://localhost:5173',
+      origin: 'https://shop-fe-th.vercel.app',
       methods: ['GET', 'POST'],
       credentials: true,
     },
