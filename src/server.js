@@ -18,29 +18,11 @@ initializeSocketServer(server)
 
 
 
-const allowedOrigins = [
-  'https://fe-shop-orebi.vercel.app/',
-  // 'http://localhost:5173' // Thêm domain frontend mới vào danh sách cho phép
-];
-
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
-      callback(null, true); // cho phép yêu cầu từ origin hợp lệ
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true, // Nếu bạn cần gửi cookie hay session
-};
-
-app.use(cors(corsOptions));
-
-// app.use(cors({
-//   origin: 'https://fe-shop-orebi.vercel.app/', // Thêm domain frontend mới vào danh sách cho phép
-//   credentials: true
-// }))
-
+app.use(cors({
+  origin: process.env.NODE_ENV === "production" ? process.env.FRONTEND_URL : '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Các phương thức hợp lệ,
+  allowedHeaders: ['Content-Type', 'Authorization'], // Các header hợp lệ
+}))
 
 
 
