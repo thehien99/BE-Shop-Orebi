@@ -19,7 +19,8 @@ initializeSocketServer(server)
 
 
 const allowedOrigins = [
-  'https://shop-fe-seven.vercel.app', // Thêm domain frontend mới vào danh sách cho phép
+  'https://fe-shop-orebi.vercel.app/',
+  // 'http://localhost:5173' // Thêm domain frontend mới vào danh sách cho phép
 ];
 
 const corsOptions = {
@@ -36,7 +37,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // app.use(cors({
-//   origin: 'https://shop-fe-seven.vercel.app', // Thêm domain frontend mới vào danh sách cho phép
+//   origin: 'https://fe-shop-orebi.vercel.app/', // Thêm domain frontend mới vào danh sách cho phép
 //   credentials: true
 // }))
 

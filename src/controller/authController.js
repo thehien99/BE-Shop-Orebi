@@ -5,7 +5,7 @@ const db = require('../models')
 const { v4 } = require('uuid')
 const { where } = require('sequelize')
 
-const register = async (req, res, next) => {
+const register = async (req, res) => {
   const { name, emailOrPhone, password, role } = req.body
   try {
     if (!name || !emailOrPhone || !password || !role)

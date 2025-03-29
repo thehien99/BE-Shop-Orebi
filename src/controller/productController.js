@@ -229,9 +229,9 @@ const orderProduct = async (req, res) => {
     );
 
     //save redis
-    redis.cacheNewOrder(createOrder)
+    // redis.cacheNewOrder(createOrder)
     //send notification for all admins
-    socket.emitNewOrder(createOrder)
+    // socket.emitNewOrder(createOrder)
 
 
     return res.status(200).json({

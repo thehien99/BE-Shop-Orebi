@@ -1,4 +1,4 @@
-const redis = require('../redis/redis')
+// const redis = require('../redis/redis')
 let io;
 let connectedAdmins = new Set();  // Set lưu trữ socket ID của các admin đang kết nối
 
@@ -16,15 +16,15 @@ function initializeSocketServer(server) {
     connectedAdmins.add(socket.id);
 
     //lấy thông báo khi admin kết nối lại
-    redis.getAllOrdersFromCache()
-      .then((orders) => {
-        orders.forEach(order => {
-          socket.emit('newOrder', order);  // Gửi thông báo cho admin về các đơn hàng cũ
-        });
-      })
-      .catch((error) => {
-        console.error('Lỗi khi lấy đơn hàng từ Redis:', error);
-      });
+    // redis.getAllOrdersFromCache()
+    //   .then((orders) => {
+    //     orders.forEach(order => {
+    //       socket.emit('newOrder', order);  // Gửi thông báo cho admin về các đơn hàng cũ
+    //     });
+    //   })
+    //   .catch((error) => {
+    //     console.error('Lỗi khi lấy đơn hàng từ Redis:', error);
+    //   });
 
 
     // Lắng nghe sự kiện admin rời đi

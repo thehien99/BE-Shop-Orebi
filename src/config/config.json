@@ -1,11 +1,11 @@
 {
   "development": {
     "username": "avnadmin",
-    "password": "AVNS_zysGR-XWJrt-rZMi5Mm",
+    "password": "AVNS_53_Y90dwE_LUgXvFh75",
     "database": "defaultdb",
-    "host": "danghien-facebook-thehien9299.i.aivencloud.com",
+    "host": "orebi-orebi.i.aivencloud.com",
     "dialect": "postgres",
-    "port": "20961",
+    "port": "16279",
     "logging": false,
     "dialectOptions": {
       "ssl": {
@@ -16,11 +16,11 @@
   },
   "production": {
     "username": "avnadmin",
-    "password": "AVNS_zysGR-XWJrt-rZMi5Mm",
+    "password": "AVNS_53_Y90dwE_LUgXvFh75",
     "database": "defaultdb",
-    "host": "danghien-facebook-thehien9299.i.aivencloud.com",
+    "host": "orebi-orebi.i.aivencloud.com",
     "dialect": "postgres",
-    "port": "20961",
+    "port": "16279",
     "logging": false,
     "dialectOptions": {
       "ssl": {
